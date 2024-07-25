@@ -1,40 +1,52 @@
 plugins {
+	kotlin("jvm") version "1.9.24"
+	kotlin("plugin.jpa") version "1.9.24"
+	kotlin("plugin.spring") version "1.9.24"
 	id("org.springframework.boot") version "3.3.2"
 	id("io.spring.dependency-management") version "1.1.6"
-	kotlin("plugin.jpa") version "1.9.24"
-	kotlin("jvm") version "1.9.24"
-	kotlin("plugin.spring") version "1.9.24"
 }
 
-group = "com.metalbono.service"
-version = "0.0.1-SNAPSHOT"
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+allprojects {
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
+	apply(plugin = "org.jetbrains.kotlin.jvm")
+	apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+	apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+	apply(plugin = "io.spring.dependency-management")
 
-dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	runtimeOnly("com.h2database:h2")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(21)
+		}
+	}
+
+	dependencies {
+		implementation("org.jetbrains.kotlin:kotlin-reflect")
+		testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+		testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+		testImplementation("org.springframework.boot:spring-boot-starter-test")
+	}
+
+	tasks.withType<Test> {
+		useJUnitPlatform()
+	}
+
+	tasks.named<Jar>("jar") {
+		enabled = true
+	}
 }
 
 kotlin {
+	jvmToolchain {
+		languageVersion.set(JavaLanguageVersion.of(21))
+	}
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
 	}
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
+
