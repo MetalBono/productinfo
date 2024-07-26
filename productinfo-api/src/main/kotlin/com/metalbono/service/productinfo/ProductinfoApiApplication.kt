@@ -1,4 +1,4 @@
-package com.metalbono.service.productinfo.api
+package com.metalbono.service.productinfo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
