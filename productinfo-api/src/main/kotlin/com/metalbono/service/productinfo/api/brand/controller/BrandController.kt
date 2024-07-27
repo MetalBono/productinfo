@@ -4,26 +4,26 @@ import com.metalbono.service.productinfo.api.brand.model.CreateBrandRequest
 import com.metalbono.service.productinfo.api.brand.model.UpdateBrandRequest
 import com.metalbono.service.productinfo.api.brand.model.convertToDomainModel
 import com.metalbono.service.productinfo.domain.brand.model.Brand
-import com.metalbono.service.productinfo.domain.brand.service.BrandService
+import com.metalbono.service.productinfo.domain.brand.service.BrandManagementService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/brand")
+@RequestMapping("/api/v1/brand-management")
 class BrandController(
-    private val brandService: BrandService,
+    private val brandManagementService: BrandManagementService,
 ) {
     @PostMapping
-    fun addBrand(payload: CreateBrandRequest): Brand {
-        return brandService.addBrand(payload.convertToDomainModel())
+    fun addBrand(@RequestBody payload: CreateBrandRequest): Brand {
+        return brandManagementService.addBrand(payload.convertToDomainModel())
     }
 
     @PutMapping
-    fun updateBrand(payload: UpdateBrandRequest): Brand {
-        return brandService.updateBrand(payload.convertToDomainModel())
+    fun updateBrand(@RequestBody payload: UpdateBrandRequest): Brand {
+        return brandManagementService.updateBrand(payload.convertToDomainModel())
     }
 
     @DeleteMapping("/{brand-id}")
     fun deleteBrand(@PathVariable(name = "brand-id") brandId: Long): Boolean {
-        return brandService.deleteBrand(brandId)
+        return brandManagementService.deleteBrand(brandId)
     }
 }

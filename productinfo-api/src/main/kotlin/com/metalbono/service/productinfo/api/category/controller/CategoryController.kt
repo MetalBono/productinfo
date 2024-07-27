@@ -4,26 +4,26 @@ import com.metalbono.service.productinfo.api.category.model.CreateCategoryReques
 import com.metalbono.service.productinfo.api.category.model.UpdateCategoryRequest
 import com.metalbono.service.productinfo.api.category.model.convertToDomainModel
 import com.metalbono.service.productinfo.domain.category.model.Category
-import com.metalbono.service.productinfo.domain.category.service.CategoryService
+import com.metalbono.service.productinfo.domain.category.service.CategoryManagementService
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping("/api/v1/category-management")
 class CategoryController(
-    private val categoryService: CategoryService,
+    private val categoryManagementService: CategoryManagementService,
 ) {
     @PostMapping
     fun addCategory(payload: CreateCategoryRequest): Category {
-        return categoryService.addCategory(payload.convertToDomainModel())
+        return categoryManagementService.addCategory(payload.convertToDomainModel())
     }
 
     @PutMapping
     fun updateCategory(payload: UpdateCategoryRequest): Category {
-        return categoryService.updateCategory(payload.convertToDomainModel())
+        return categoryManagementService.updateCategory(payload.convertToDomainModel())
     }
 
     @DeleteMapping("/{category-id}")
     fun deleteCategory(@PathVariable(name = "category-id") categoryId: Long): Boolean {
-        return categoryService.deleteCategory(categoryId)
+        return categoryManagementService.deleteCategory(categoryId)
     }
 }
