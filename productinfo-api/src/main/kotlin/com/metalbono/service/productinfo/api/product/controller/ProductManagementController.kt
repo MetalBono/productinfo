@@ -16,15 +16,19 @@ import org.springframework.web.bind.annotation.*
 class ProductManagementController(
     private val productManagementService: ProductManagementService,
 ) {
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "상품 추가", description = "새 상품을 추가한다.")
     @PostMapping
     fun addProduct(@RequestBody payload: CreateProductRequest) = productManagementService.addProduct(payload.convertToDomainModel())
         .toProductResponse()
 
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "상품 수정", description = "지정된 상품 정보를 수정한다.")
     @PutMapping
     fun updateProduct(@RequestBody payload: UpdateProductRequest) = productManagementService.updateProduct(payload.convertToDomainModel())
         .toProductResponse()
+
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "상품 삭제", description = "product-id 에 해당하는 상품을 삭제한다.")
     @DeleteMapping("/{product-id}")
     fun deleteProduct(

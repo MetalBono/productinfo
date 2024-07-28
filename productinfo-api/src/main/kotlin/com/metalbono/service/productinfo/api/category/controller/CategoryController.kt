@@ -16,6 +16,6 @@ class CategoryController(
 ) {
     @Operation(summary = "모든 카테고리 조회", description = "카테고리 전체 목록을 조회한다.")
     @GetMapping("/list/all")
-    fun getAllBrands() = categoryService.getAllCategories()
+    fun getAllCategories() = categoryService.getAllCategories()
         .map { it.toCategoryResponse() }
 }

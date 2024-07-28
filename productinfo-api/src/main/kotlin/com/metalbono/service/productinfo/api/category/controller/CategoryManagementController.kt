@@ -16,16 +16,19 @@ import org.springframework.web.bind.annotation.*
 class CategoryManagementController(
     private val categoryManagementService: CategoryManagementService,
 ) {
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "카테고리 추가", description = "새 카테고리를 추가한다.")
     @PostMapping
     fun addCategory(@RequestBody payload: CreateCategoryRequest) = categoryManagementService.addCategory(payload.convertToDomainModel())
         .toCategoryResponse()
 
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "카테고리 수정", description = "지정된 카테고리 정보를 수정한다.")
     @PutMapping
     fun updateCategory(@RequestBody payload: UpdateCategoryRequest) = categoryManagementService.updateCategory(payload.convertToDomainModel())
         .toCategoryResponse()
 
+    // 구현 4) 브랜드 및 카테고리, 상품을 추가 / 업데이트 / 삭제하는 API
     @Operation(summary = "카테고리 삭제", description = "category-id 에 해당하는 카테고리를 삭제한다.")
     @DeleteMapping("/{category-id}")
     fun deleteCategory(
