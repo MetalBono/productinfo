@@ -26,6 +26,8 @@ subprojects {
 
 	dependencies {
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
+		implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 		testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 		testImplementation("org.springframework.boot:spring-boot-starter-test")

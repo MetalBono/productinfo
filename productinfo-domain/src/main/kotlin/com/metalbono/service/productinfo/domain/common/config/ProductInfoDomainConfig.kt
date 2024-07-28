@@ -1,0 +1,9 @@
+package com.metalbono.service.productinfo.domain.common.config
+
+import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableAsync
+
+@EnableAsync
+@Configuration
+class ProductInfoDomainConfig {
+}
