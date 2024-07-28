@@ -18,9 +18,10 @@ class ProductManagementService(
 ) {
     fun addProduct(product: Product): Product {
         return try {
+            // 상품 정보 저장
             val savedProduct = productRepository.save(product.convertToEntity(createdBy = DEFAULT_USER_NAME))
                 .convertToDomainModel()
-            //  Best price 갱신 요청
+            // 추가된 정보로 Best price 갱신 요청
             applicationEventPublisher.publishEvent(BrandBestPriceUpdateEvent(
                 brandId = savedProduct.brandId,
                 categoryId = savedProduct.categoryId,
@@ -35,6 +36,7 @@ class ProductManagementService(
     }
 
     fun updateProduct(product: Product): Product {
+        // 상품 정보 수정
         val updatedProduct = product.id?.let {
             productRepository.findById(it)
                 .map { entity -> entity.updateBy(
@@ -48,7 +50,7 @@ class ProductManagementService(
         }?.convertToDomainModel()
             ?: throw RuntimeException("상품 수정 실패 - 존재하지 않는 상품입니다. id = ${product.id}")
 
-        //  Best price 갱신 요청
+        // 수정된 정보로 Best price 갱신 요청
         applicationEventPublisher.publishEvent(BrandBestPriceUpdateEvent(
             brandId = updatedProduct.brandId,
             categoryId = updatedProduct.categoryId,
@@ -60,11 +62,12 @@ class ProductManagementService(
     }
 
     fun deleteProduct(productId: Long): Boolean {
+        // 상품 정보 삭제
         val deletedProduct = productRepository.findById(productId)
             .map { entity -> entity.deleteBy(deletedBy = DEFAULT_USER_NAME) }
             .getOrNull() ?: throw RuntimeException("상품 삭제 실패 - 존재하지 않는 상품입니다. id = $productId")
 
-        //  Best price 갱신 요청
+        // 삭제된 정보로 Best price 갱신 요청
         applicationEventPublisher.publishEvent(BrandBestPriceUpdateEvent(
             brandId = deletedProduct.brandId,
             categoryId = deletedProduct.categoryId,

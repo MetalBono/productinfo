@@ -15,9 +15,13 @@ class ProductInfoFacade(
     private val bestPriceService: BestPriceService,
 ) {
     fun getMinPriceProductsByCategory(): MinPriceProductByCategoryResponse = kotlin.runCatching {
+        // 카테고리 별 최저가 상품 목록 조회
         val products = productInfoService.getMinPriceProductsByCategory()
+        // 브랜드 정보 조회
         val brandMap = brandService.getBrandByIds(products.map { it.brandId }).associateBy { it.id }
+        // 카테고리 정보 조회
         val categoryMap = categoryService.getCategoryByIds(products.map { it.categoryId }).associateBy { it.id }
+        // 조회된 정보 merge
         return MinPriceProductByCategoryResponse(
             totalPrice = products.sumOf { it.price },
             products = products.map { it.toProductDetailResponse(
@@ -39,19 +43,17 @@ class ProductInfoFacade(
                     totalPrice = 0,
                 )
             )
-
-        // brand ID 로 최저가 세트 상품 ID 목록 전체 조회
+        // brand ID 로 최저가 카테고리 세트 상품 목록 전체 조회
         val brandId = brandBestPrice.brandId
         val brandBestPriceProducts = bestPriceService.getBestPriceProducts(brandId)
-
-        // brand, category 정보 조회
+        // 브랜드 정보 조회
         val brand = brandService.getBrandById(brandId).convertToDomainModel()
+        // 카테고리 정보 조회
         val categoryMap = categoryService.getCategoryByIds(brandBestPriceProducts.map { it.categoryId }).associateBy { it.id }
-
         // 상품 ID 목록으로 상품 목록 조회
         val products = productInfoService.getProductsByIds(brandBestPriceProducts.map { it.productId })
             .map { it.toProductDetailResponse(brand, categoryMap[it.categoryId]) }
-
+        // 조회된 정보 merge
         return MinPriceInfoBySingleBrandForAllCategoryResponse(
             minPriceBrandInfo = MinPriceBrandInfoResponse(
                 brandId = brand.id!!,
@@ -65,12 +67,17 @@ class ProductInfoFacade(
     }.getOrThrow()
 
     fun getMinMaxPriceProductInfoByCategoryName(categoryName: String): MinMaxPriceProductInfoByCategoryResponse = kotlin.runCatching {
+        // 카테고리 이름으로 카테고리 조회
         val category = categoryService.getCategoryByName(categoryName)
+        // 카테고리 id 로 최저가 상품 목록 조회
         val minPriceProducts = productInfoService.getMinPriceProductsByCategoryId(category.id!!)
+        // 카테고리 id 로 최고가 상품 목록 조회
         val maxPriceProducts = productInfoService.getMaxPriceProductsByCategoryId(category.id!!)
+        // 브랜드 정보 조회
         val brandMap = brandService.getBrandByIds(
             minPriceProducts.map { it.brandId } + maxPriceProducts.map { it.brandId }
         ).associateBy { it.id }
+        // 조회된 정보 merge
         return MinMaxPriceProductInfoByCategoryResponse(
             categoryId = category.id!!,
             categoryName = category.name,

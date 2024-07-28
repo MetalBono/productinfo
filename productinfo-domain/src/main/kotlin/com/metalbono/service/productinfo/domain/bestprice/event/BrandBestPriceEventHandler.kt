@@ -7,7 +7,9 @@ import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.
 import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.BrandCategoryBestPriceRepository
 import com.metalbono.service.productinfo.domain.product.repository.persistent.ProductRepository
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import kotlin.jvm.optionals.getOrNull
@@ -18,8 +20,9 @@ class BrandBestPriceEventHandler(
     private val brandBestPriceRepository: BrandBestPriceRepository,
     private val brandCategoryBestPriceRepository: BrandCategoryBestPriceRepository,
 ) {
+    @Async
     @EventListener
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun handleBrandBestPriceUpdateEvent(event: BrandBestPriceUpdateEvent) {
         when (event.eventType) {
             PRODUCT_ADDED, PRODUCT_UPDATED -> updateBrandBestPriceForUpdated(event)
@@ -107,6 +110,7 @@ class BrandBestPriceEventHandler(
         newPrice: Long,
         oldPrice: Long,
      ) {
+        // 브랜드 최저가 정보가 있으면 갱신, 없으면 추가
         brandBestPriceRepository.findById(brandId)
             .getOrNull()
             ?.increasePriceBy(
