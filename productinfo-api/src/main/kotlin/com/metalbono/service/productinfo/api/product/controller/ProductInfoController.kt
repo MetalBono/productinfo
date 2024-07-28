@@ -1,10 +1,12 @@
 package com.metalbono.service.productinfo.api.product.controller
 
 import com.metalbono.service.productinfo.api.product.facade.ProductInfoFacade
+import com.metalbono.service.productinfo.api.product.model.toProductResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -36,4 +38,20 @@ class ProductInfoController(
         @RequestParam categoryName: String
     ) =
         productInfoFacade.getMinMaxPriceProductInfoByCategoryName(categoryName)
+
+    @Operation(summary = "브랜드의 모든 상품 조회", description = "브랜드 ID에 해당하는 상품 전체 목록을 조회한다.")
+    @GetMapping("/list/by-brand/{brand-id}")
+    fun getAllProductByBrand(
+        @Parameter(description = "브랜드 ID", example = "1")
+        @PathVariable(name = "brand-id") brandId: Long,
+    ) = productInfoFacade.getAllProductByBrand(brandId)
+        .map { it.toProductResponse() }
+
+    @Operation(summary = "카테고리의 모든 상품 조회", description = "카테고리 ID에 해당하는 상품 전체 목록을 조회한다.")
+    @GetMapping("/list/by-category/{category-id}")
+    fun getAllProductByCategory(
+        @Parameter(description = "카테고리 ID", example = "1")
+        @PathVariable(name = "category-id") categoryId: Long,
+    ) = productInfoFacade.getAllProductByCategory(categoryId)
+        .map { it.toProductResponse() }
 }

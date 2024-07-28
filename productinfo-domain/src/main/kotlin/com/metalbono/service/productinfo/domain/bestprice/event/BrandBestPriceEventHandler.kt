@@ -5,6 +5,7 @@ import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.
 import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.BrandBestPriceRepository
 import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.BrandCategoryBestPriceEntity
 import com.metalbono.service.productinfo.domain.bestprice.repository.persistent.BrandCategoryBestPriceRepository
+import com.metalbono.service.productinfo.domain.category.repository.persistent.CategoryRepository
 import com.metalbono.service.productinfo.domain.product.repository.persistent.ProductRepository
 import org.springframework.context.event.EventListener
 import org.springframework.scheduling.annotation.Async
@@ -17,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 @Component
 class BrandBestPriceEventHandler(
     private val productRepository: ProductRepository,
+    private val categoryRepository: CategoryRepository,
     private val brandBestPriceRepository: BrandBestPriceRepository,
     private val brandCategoryBestPriceRepository: BrandCategoryBestPriceRepository,
 ) {
@@ -37,6 +39,8 @@ class BrandBestPriceEventHandler(
      * 저장된 값보다 추가/갱신된 상품의 가격이 싸면 (BrandCategoryBestPriceEntity) - 브랜드 카테고리 별 최저가격 정보를 추가 / 갱신
      * - 정보가 변경됐으면 : 브랜드 별 최저가 정보 재계산해서 갱신 (BrandBestPriceEntity)
      * - 교체되지 않았으면 : 아무것도 안함
+     *
+     * 단, 최저가 정보에 등록된 상품 ID가 변경되면 무조건 갱신한다.
      */
     fun updateBrandBestPriceForUpdated(event: BrandBestPriceUpdateEvent) {
         val brandCategoryBestPriceEntity = brandCategoryBestPriceRepository.findByBrandIdAndCategoryId(
@@ -60,7 +64,9 @@ class BrandBestPriceEventHandler(
                 newPrice = event.price,
                 oldPrice = 0L,
             )
-        } else if (brandCategoryBestPriceEntity.price < event.price) {
+        } else if (brandCategoryBestPriceEntity.productId == event.productId
+            || brandCategoryBestPriceEntity.price > event.price) {
+            val oldPrice = brandCategoryBestPriceEntity.price
             brandCategoryBestPriceEntity.updatePriceBy(
                 price = event.price,
                 productId = event.productId,
@@ -70,7 +76,7 @@ class BrandBestPriceEventHandler(
             updateBrandBestPrice(
                 brandId = event.brandId,
                 newPrice = event.price,
-                oldPrice = brandCategoryBestPriceEntity.price,
+                oldPrice = oldPrice,
             )
         }
     }
@@ -91,6 +97,7 @@ class BrandBestPriceEventHandler(
         )
 
         if (brandCategoryBestPriceEntity != null) {
+            val oldPrice = brandCategoryBestPriceEntity.price
             brandCategoryBestPriceEntity.deleteBy(DEFAULT_USER_NAME)
             val minPrice = productRepository.findMinPriceProductByCategoryId(event.categoryId)
                 .filter { it.brandId == event.brandId }
@@ -100,7 +107,7 @@ class BrandBestPriceEventHandler(
             updateBrandBestPrice(
                 brandId = event.brandId,
                 newPrice = minPrice,
-                oldPrice = brandCategoryBestPriceEntity.price,
+                oldPrice = oldPrice,
             )
         }
     }
@@ -111,17 +118,31 @@ class BrandBestPriceEventHandler(
         oldPrice: Long,
      ) {
         // 브랜드 최저가 정보가 있으면 갱신, 없으면 추가
-        brandBestPriceRepository.findById(brandId)
+        val brandBestPriceEntity = brandBestPriceRepository.findById(brandId)
             .getOrNull()
             ?.increasePriceBy(
                 priceIncreaseAmount = newPrice - oldPrice,
                 updatedBy = DEFAULT_USER_NAME,
-            ) ?: brandBestPriceRepository.save(BrandBestPriceEntity(
-            brandId = brandId,
-            price = newPrice,
-            createdBy = DEFAULT_USER_NAME,
-            createdAt = LocalDateTime.now(),
-        ))
+            ) ?: brandBestPriceRepository.save(
+            BrandBestPriceEntity(
+                brandId = brandId,
+                price = newPrice,
+                createdBy = DEFAULT_USER_NAME,
+                createdAt = LocalDateTime.now(),
+            )
+        )
+
+        // 모든 카테고리의 각 카테고리 별 상품 정보가 하나씩 모두 존재해야 유효한 best price 로 설정
+        val allCategoryIds = categoryRepository.findAll().map { it.id }
+        val brandBestPriceProducts = brandCategoryBestPriceRepository.findByBrandId(brandId)
+        val validBestPrice = allCategoryIds.all { id -> brandBestPriceProducts.count { it.categoryId == id } == 1 }
+        if (validBestPrice) {
+            // 유효한 상태가 되면 best price 항목에 다시 추가
+            brandBestPriceEntity.restoreBy(DEFAULT_USER_NAME)
+        } else {
+            // 유효하지 않은 상태가 되면 best price 항목에서 제거
+            brandBestPriceEntity.deleteBy(DEFAULT_USER_NAME)
+        }
     }
 
     companion object {

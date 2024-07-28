@@ -1,6 +1,7 @@
 package com.metalbono.service.productinfo.domain.bestprice.repository.persistent
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 
 interface BrandCategoryBestPriceRepository : JpaRepository<BrandCategoryBestPriceEntity, Long> {
 

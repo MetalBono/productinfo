@@ -9,9 +9,6 @@ import java.time.LocalDateTime
 @Table(
     name = "brand_best_price",
     schema = "productinfo",
-    uniqueConstraints = [
-        UniqueConstraint(name = "udx_brand_id", columnNames = ["brand_id"])
-    ],
 )
 @SQLRestriction("deleted_at IS NULL")
 data class BrandBestPriceEntity(
@@ -39,6 +36,24 @@ data class BrandBestPriceEntity(
         this.price += priceIncreaseAmount
         this.updatedBy = updatedBy
         this.updatedAt = LocalDateTime.now()
+        return this
+    }
+
+    fun deleteBy(
+        deletedBy: String,
+    ): BrandBestPriceEntity {
+        this.deletedBy = deletedBy
+        this.deletedAt = LocalDateTime.now()
+        return this
+    }
+
+    fun restoreBy(
+        restoredBy: String,
+    ): BrandBestPriceEntity {
+        this.updatedBy = restoredBy
+        this.updatedAt = LocalDateTime.now()
+        this.deletedBy = null
+        this.deletedAt = null
         return this
     }
 }

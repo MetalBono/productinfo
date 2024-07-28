@@ -30,6 +30,6 @@ class BrandManagementController(
     @DeleteMapping("/{brand-id}")
     fun deleteBrand(
         @Parameter(description = "브랜드 ID", example = "1")
-        @PathVariable(name = "brand-id") brandId: Long
+        @PathVariable(name = "brand-id") brandId: Long,
     ): Boolean = brandManagementService.deleteBrand(brandId)
 }

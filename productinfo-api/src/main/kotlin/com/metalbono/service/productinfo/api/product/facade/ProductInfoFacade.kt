@@ -87,4 +87,8 @@ class ProductInfoFacade(
     }.onFailure { e ->
         throw RuntimeException("카테고리 이름으로 최저가, 최고가 상품 조회 중 오류 발생. message - ${e.message}")
     }.getOrThrow()
+
+    fun getAllProductByBrand(brandId: Long) = productInfoService.getProductsByBrandId(brandId)
+
+    fun getAllProductByCategory(categoryId: Long) = productInfoService.getProductsByCategoryId(categoryId)
 }

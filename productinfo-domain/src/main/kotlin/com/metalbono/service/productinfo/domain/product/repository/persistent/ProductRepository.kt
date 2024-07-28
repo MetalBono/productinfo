@@ -49,4 +49,8 @@ interface ProductRepository : JpaRepository<ProductEntity, Long> {
     """
     )
     fun findMaxPriceProductByCategoryId(categoryId: Long): List<ProductEntity>
+
+    fun findByBrandId(brandId: Long): List<ProductEntity>
+
+    fun findByCategoryId(categoryId: Long): List<ProductEntity>
 }

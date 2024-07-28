@@ -9,9 +9,6 @@ import java.time.LocalDateTime
 @Table(
     name = "brand_category_best_price",
     schema = "productinfo",
-    uniqueConstraints = [
-        UniqueConstraint(name = "udx_brand_id_category_id", columnNames = ["brand_id", "category_id"])
-    ],
     indexes = [
         Index(name = "idx_brand_id", columnList = "brand_id")
     ]

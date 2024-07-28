@@ -29,6 +29,6 @@ class ProductManagementController(
     @DeleteMapping("/{product-id}")
     fun deleteProduct(
         @Parameter(description = "상품 ID", example = "1")
-        @PathVariable(name = "product-id",
-    ) productId: Long) = productManagementService.deleteProduct(productId)
+        @PathVariable(name = "product-id") productId: Long,
+    ) = productManagementService.deleteProduct(productId)
 }

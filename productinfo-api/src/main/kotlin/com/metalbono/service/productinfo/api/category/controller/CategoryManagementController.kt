@@ -30,6 +30,6 @@ class CategoryManagementController(
     @DeleteMapping("/{category-id}")
     fun deleteCategory(
         @Parameter(description = "카테고리 ID", example = "1")
-        @PathVariable(name = "category-id",
-    ) categoryId: Long) = categoryManagementService.deleteCategory(categoryId)
+        @PathVariable(name = "category-id") categoryId: Long,
+    ) = categoryManagementService.deleteCategory(categoryId)
 }

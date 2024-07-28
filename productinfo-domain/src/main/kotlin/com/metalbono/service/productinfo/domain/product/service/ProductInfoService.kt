@@ -21,4 +21,10 @@ class ProductInfoService(
 
     fun getMaxPriceProductsByCategoryId(categoryId: Long) = productRepository.findMaxPriceProductByCategoryId(categoryId)
         .map { it.convertToDomainModel() }
+
+    fun getProductsByBrandId(brandId: Long) = productRepository.findByBrandId(brandId)
+        .map { it.convertToDomainModel() }
+
+    fun getProductsByCategoryId(categoryId: Long) = productRepository.findByCategoryId(categoryId)
+        .map { it.convertToDomainModel() }
 }
