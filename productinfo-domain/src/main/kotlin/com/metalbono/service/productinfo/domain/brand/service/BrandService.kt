@@ -15,4 +15,7 @@ class BrandService(
 
     fun getBrandByIds(brandIds: List<Long>) = brandRepository.findAllById(brandIds)
         .map { it.convertToDomainModel() }
+
+    fun getAllBrands() = brandRepository.findAll()
+        .map { it.convertToDomainModel() }
 }

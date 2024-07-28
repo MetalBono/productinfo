@@ -1,29 +1,21 @@
 package com.metalbono.service.productinfo.api.brand.controller
 
-import com.metalbono.service.productinfo.api.brand.model.CreateBrandRequest
-import com.metalbono.service.productinfo.api.brand.model.UpdateBrandRequest
-import com.metalbono.service.productinfo.api.brand.model.convertToDomainModel
-import com.metalbono.service.productinfo.domain.brand.model.Brand
-import com.metalbono.service.productinfo.domain.brand.service.BrandManagementService
-import org.springframework.web.bind.annotation.*
+import com.metalbono.service.productinfo.api.brand.model.toBrandResponse
+import com.metalbono.service.productinfo.domain.brand.service.BrandService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
+@Tag(name = "BrandController", description = "브랜드 정보 API")
 @RestController
-@RequestMapping("/api/v1/brand-management")
+@RequestMapping("/api/v1/brand")
 class BrandController(
-    private val brandManagementService: BrandManagementService,
+    private val brandService: BrandService,
 ) {
-    @PostMapping
-    fun addBrand(@RequestBody payload: CreateBrandRequest): Brand {
-        return brandManagementService.addBrand(payload.convertToDomainModel())
-    }
-
-    @PutMapping
-    fun updateBrand(@RequestBody payload: UpdateBrandRequest): Brand {
-        return brandManagementService.updateBrand(payload.convertToDomainModel())
-    }
-
-    @DeleteMapping("/{brand-id}")
-    fun deleteBrand(@PathVariable(name = "brand-id") brandId: Long): Boolean {
-        return brandManagementService.deleteBrand(brandId)
-    }
+    @Operation(summary = "모든 브랜드 조회", description = "브랜브 전체 목록을 조회한다.")
+    @GetMapping("/list/all")
+    fun getAllBrands() = brandService.getAllBrands()
+        .map { it.toBrandResponse() }
 }

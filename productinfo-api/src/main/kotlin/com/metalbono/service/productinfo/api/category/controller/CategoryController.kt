@@ -1,29 +1,21 @@
 package com.metalbono.service.productinfo.api.category.controller
 
-import com.metalbono.service.productinfo.api.category.model.CreateCategoryRequest
-import com.metalbono.service.productinfo.api.category.model.UpdateCategoryRequest
-import com.metalbono.service.productinfo.api.category.model.convertToDomainModel
-import com.metalbono.service.productinfo.domain.category.model.Category
-import com.metalbono.service.productinfo.domain.category.service.CategoryManagementService
-import org.springframework.web.bind.annotation.*
+import com.metalbono.service.productinfo.api.category.model.toCategoryResponse
+import com.metalbono.service.productinfo.domain.category.service.CategoryService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
+@Tag(name = "CategoryController", description = "카테고리 정보 API")
 @RestController
-@RequestMapping("/api/v1/category-management")
+@RequestMapping("/api/v1/category")
 class CategoryController(
-    private val categoryManagementService: CategoryManagementService,
+    private val categoryService: CategoryService,
 ) {
-    @PostMapping
-    fun addCategory(payload: CreateCategoryRequest): Category {
-        return categoryManagementService.addCategory(payload.convertToDomainModel())
-    }
-
-    @PutMapping
-    fun updateCategory(payload: UpdateCategoryRequest): Category {
-        return categoryManagementService.updateCategory(payload.convertToDomainModel())
-    }
-
-    @DeleteMapping("/{category-id}")
-    fun deleteCategory(@PathVariable(name = "category-id") categoryId: Long): Boolean {
-        return categoryManagementService.deleteCategory(categoryId)
-    }
+    @Operation(summary = "모든 카테고리 조회", description = "카테고리 전체 목록을 조회한다.")
+    @GetMapping("/list/all")
+    fun getAllBrands() = categoryService.getAllCategories()
+        .map { it.toCategoryResponse() }
 }

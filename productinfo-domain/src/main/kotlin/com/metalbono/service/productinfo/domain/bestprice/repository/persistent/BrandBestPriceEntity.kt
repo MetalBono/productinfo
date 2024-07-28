@@ -6,7 +6,13 @@ import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "brand_best_price", schema = "productinfo")
+@Table(
+    name = "brand_best_price",
+    schema = "productinfo",
+    uniqueConstraints = [
+        UniqueConstraint(name = "udx_brand_id", columnNames = ["brand_id"])
+    ],
+)
 @SQLRestriction("deleted_at IS NULL")
 data class BrandBestPriceEntity(
     @Id

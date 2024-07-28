@@ -20,7 +20,7 @@ class ProductInfoFacade(
         val categoryMap = categoryService.getCategoryByIds(products.map { it.categoryId }).associateBy { it.id }
         return MinPriceProductByCategoryResponse(
             totalPrice = products.sumOf { it.price },
-            products = products.map { it.toProductInfoResponse(
+            products = products.map { it.toProductDetailResponse(
                 brand = brandMap[it.brandId],
                 category = categoryMap[it.categoryId],
             )}.sortedBy { it.categoryId })
@@ -50,7 +50,7 @@ class ProductInfoFacade(
 
         // 상품 ID 목록으로 상품 목록 조회
         val products = productInfoService.getProductsByIds(brandBestPriceProducts.map { it.productId })
-            .map { it.toProductInfoResponse(brand, categoryMap[it.categoryId]) }
+            .map { it.toProductDetailResponse(brand, categoryMap[it.categoryId]) }
 
         return MinPriceInfoBySingleBrandForAllCategoryResponse(
             minPriceBrandInfo = MinPriceBrandInfoResponse(
@@ -74,8 +74,8 @@ class ProductInfoFacade(
         return MinMaxPriceProductInfoByCategoryResponse(
             categoryId = category.id!!,
             categoryName = category.name,
-            minPriceProducts = minPriceProducts.map { it.toProductInfoResponse(brandMap[it.brandId], category) },
-            maxPriceProducts = maxPriceProducts.map { it.toProductInfoResponse(brandMap[it.brandId], category) },
+            minPriceProducts = minPriceProducts.map { it.toProductDetailResponse(brandMap[it.brandId], category) },
+            maxPriceProducts = maxPriceProducts.map { it.toProductDetailResponse(brandMap[it.brandId], category) },
         );
     }.onFailure { e ->
         throw RuntimeException("카테고리 이름으로 최저가, 최고가 상품 조회 중 오류 발생. message - ${e.message}")
